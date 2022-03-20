@@ -19,30 +19,9 @@ app.logger.removeHandler(default_handler)
 # Log that the Flask application is starting
 app.logger.info('Starting the Flask Stock Portfolio App...')
 
-@app.route('/')
-def index():
-    app.logger.info('Calling the index() function.')
-    return render_template('index.html')
+from project.users import users_blueprint
+from project.stocks import stock_blueprint
 
-@app.route('/about')
-def about():
-    flash('Thanks for learning about this site', 'info')
-    return render_template('about.html', company_name='Testdriven.io')
+app.register_blueprint(users_blueprint, url_prefix='/users')
+app.register_blueprint(stock_blueprint)
 
-@app.route('/add_stock', methods=['GET', 'POST'])
-def add_stock():
-    if request.method == 'POST':
-        session['stock_symbol'] = request.form['stock_symbol']
-        session['number_of_shares'] = request.form['number_of_shares']
-        session['purchase_price'] = request.form['purchase_price']
-        flash(f"Added new stock ({ request.form['stock_symbol'] })!", 'success')
-
-        app.logger.info(f"Added new stock ({ request.form['stock_symbol'] })!")
-
-        return redirect(url_for('list_stocks'))
-
-    return render_template('add_stock.html')
-
-@app.route('/stocks')
-def list_stocks():
-    return render_template('stocks.html')
