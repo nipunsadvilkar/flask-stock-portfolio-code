@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>About</h1>
+<br>
+<h2>This application is built using Flask web framework.</h2>
+<br>
+{% if company_name %}
+<footer>Course is developed by {{ company_name }}.</footer>
+{% else %}
+<footer>Enjoy the course!</footer>
+{% endif %}
+{% endblock %}
