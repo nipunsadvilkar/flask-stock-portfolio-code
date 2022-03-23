@@ -56,7 +56,6 @@ coverage.xml
 local_settings.py
 
 # Flask stuff:
-instance/
 .webassets-cache
 
 # Scrapy stuff:
@@ -103,3 +102,9 @@ ENV/
 
 # vscode
 .vscode/
+
+# Instance folder - used for run-time files
+instance/*.cfg
+instance/*.db
+instance/*.log
+instance/*.log*

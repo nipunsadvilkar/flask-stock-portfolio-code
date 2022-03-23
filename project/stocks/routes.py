@@ -15,7 +15,7 @@ def add_stock():
         session['purchase_price'] = request.form['purchase_price']
         flash(f"Added new stock ({ request.form['stock_symbol'] })!", 'success')
 
-        current_app .logger.info(f"Added new stock ({ request.form['stock_symbol'] })!")
+        current_app.logger.info(f"Added new stock ({ request.form['stock_symbol'] })!")
 
         return redirect(url_for('stocks.list_stocks'))
 
