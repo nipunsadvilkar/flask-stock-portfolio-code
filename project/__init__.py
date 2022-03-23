@@ -30,9 +30,6 @@ def configure_logging(app):
     app.logger.info('Starting the Flask Stock Portfolio App...')
 
 
-
-
-
 ################################
 # Application Factory Function #
 ################################
