@@ -2,7 +2,7 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, render_template
 from flask.logging import default_handler
 
 def register_blueprints(app):
@@ -32,6 +32,14 @@ def register_app_callbacks(app):
     def app_teardown_appcontext(error=None):
         app.logger.info('Calling app_teardown_appcontext() for the Flask application...')
 
+def register_error_pages(app):
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
+    
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        return render_template('405.html'), 405
 
 def configure_logging(app):
     # Logging Configuration
@@ -61,6 +69,7 @@ def create_app():
     app.config.from_object(config_type)
 
     register_blueprints(app)
-    register_app_callbacks(app)
     configure_logging(app)
+    register_app_callbacks(app)
+    register_error_pages(app)
     return app
