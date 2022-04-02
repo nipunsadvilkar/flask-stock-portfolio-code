@@ -2,6 +2,19 @@ from . import stock_blueprint
 from flask import render_template, request, session, redirect, url_for, flash, current_app
 
 
+@stock_blueprint.before_request
+def stocks_before_request():
+    current_app.logger.info('Calling before_request() for the stock application...')
+
+@stock_blueprint.after_request
+def stocks_after_request(response):
+    current_app.logger.info('Calling after_request() for the stock application...')
+    return response
+
+@stock_blueprint.teardown_request
+def stocks_teardown_request(error=None):
+    current_app.logger.info('Calling teardown_request() for the stock application...')
+
 @stock_blueprint.route('/')
 def index():
     current_app.logger.info('Calling the index() function.')

@@ -14,6 +14,24 @@ def register_blueprints(app):
     app.register_blueprint(stock_blueprint)
     app.register_blueprint(users_blueprint, url_prefix='/users')
 
+def register_app_callbacks(app):
+    @app.before_request
+    def app_before_request():
+        app.logger.info('Calling before_request() for the Flask application...')
+
+    @app.after_request
+    def app_after_request(response):
+        app.logger.info('Calling after_request() for the Flask application...')
+        return response
+
+    @app.teardown_request
+    def app_teardown_request(error=None):
+        app.logger.info('Calling teardown_request() for the Flask application...')
+
+    @app.teardown_appcontext
+    def app_teardown_appcontext(error=None):
+        app.logger.info('Calling app_teardown_appcontext() for the Flask application...')
+
 
 def configure_logging(app):
     # Logging Configuration
@@ -43,5 +61,6 @@ def create_app():
     app.config.from_object(config_type)
 
     register_blueprints(app)
+    register_app_callbacks(app)
     configure_logging(app)
     return app
