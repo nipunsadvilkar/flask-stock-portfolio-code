@@ -1,5 +1,5 @@
-from xml.dom import ValidationErr
-from pydantic import BaseModel, validator
+import click
+from pydantic import BaseModel, ValidationError, validator
 from flask import render_template, request, session, redirect, url_for, flash, current_app
 
 from project import database
@@ -21,6 +21,26 @@ class StockModel(BaseModel):
             raise ValueError('Stock symbol must be 1-5 characters')
         return value.upper()
 
+
+@stock_blueprint.cli.command('create_default_set')
+def create_default_set():
+    """Create three new stocks and add them to the database"""
+    stock1 = Stock('HD', '25', '232.4')
+    stock2 = Stock('RT', '24', '545.24')
+    stock3 = Stock('WQ', '43', '456.98')
+    for stock in [stock1, stock2, stock3]:
+        database.session.add(stock)
+    database.session.commit()
+
+@stock_blueprint.cli.command('create')
+@click.argument('symbol')
+@click.argument('number_of_shares')
+@click.argument('purchase_price')
+def create(symbol, number_of_shares, purchase_price):
+    """Create a new stock and add it to the database"""
+    stock = Stock(symbol, number_of_shares, purchase_price)
+    database.session.add(stock)
+    database.session.commit()
 
 @stock_blueprint.before_request
 def stocks_before_request():
@@ -61,7 +81,7 @@ def add_stock():
             flash(f"Added new stock ({ stock_data.stock_symbol })!", 'success')
             current_app.logger.info(f"Added new stock ({ request.form['stock_symbol'] })!")
             return redirect(url_for('stocks.list_stocks'))
-        except ValidationErr as e:
+        except ValidationError as e:
             print(e)
 
     return render_template('stocks/add_stock.html')
