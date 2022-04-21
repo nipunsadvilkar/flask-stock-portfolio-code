@@ -8,7 +8,7 @@ from flask.logging import default_handler
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-
+from flask_migrate import Migrate
 
 #################
 # Configuration #
@@ -28,7 +28,7 @@ metadata = MetaData(naming_convention=convention)
 # but without any arguments passed in. These instances are not
 # attached to the Flask application at this point.
 database = SQLAlchemy(metadata=metadata)
-
+db_migration = Migrate()
 ########################
 ### Helper Functions ###
 ########################
@@ -37,6 +37,7 @@ def initialise_extensions(app):
     # Since the application instance is now created, pass it to each Flask
     # extension instance to bind it to the Flask application instance (app)
     database.init_app(app)
+    db_migration.init_app(app, database, render_as_batch=True)
 
 
 def register_blueprints(app):
