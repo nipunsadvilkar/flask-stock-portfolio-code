@@ -3,6 +3,7 @@ import pytest
 from flask import current_app
 
 from project import create_app
+from project.models import Stock
 
 
 @pytest.fixture(scope='module')
@@ -16,3 +17,8 @@ def test_client():
             current_app.logger.info("Inside a testing fixture...")
 
         yield testing_client
+
+@pytest.fixture(scope='module')
+def new_stock():
+    stock = Stock('TSLA', '23', '224.97')
+    return stock
