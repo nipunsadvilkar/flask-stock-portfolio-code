@@ -4,8 +4,7 @@ from flask import current_app
 
 from project import database
 from project import create_app
-from project.models import Stock
-
+from project.models import Stock, User
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -24,9 +23,12 @@ def test_client():
         with flask_app.app_context():
             database.drop_all()
 
-
-
 @pytest.fixture(scope='module')
 def new_stock():
     stock = Stock('TSLA', '23', '224.97')
     return stock
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User('nipunsadvilkar@gmail.com', 'TestDriven10')
+    return user
