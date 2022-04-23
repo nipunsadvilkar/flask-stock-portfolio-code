@@ -1,5 +1,12 @@
+from crypt import methods
+from flask import abort, current_app, redirect, render_template, flash, request, url_for
+from sqlalchemy.exc import IntegrityError
+
+from project import database
+from project.models import User
 from . import users_blueprint
-from flask import abort, render_template, flash
+from .forms import RegistrationForm
+
 
 @users_blueprint.errorhandler(403)
 def page_forbidden(e):
@@ -13,3 +20,24 @@ def admin():
 def about():
     flash('Thanks for learning about this site', 'info')
     return render_template('users/about.html', company_name='Testdriven.io')
+
+@users_blueprint.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            try:
+                new_user = User(form.email.data, form.password.data)
+                database.session.add(new_user)
+                database.session.commit()
+                flash(f'Thanks for registering, {new_user.email}!')
+                current_app.logger.info(f'Registered new user: {form.email.data}!')
+                return redirect(url_for('stocks.index'))
+            except IntegrityError:
+                database.session.rollback()
+                flash(f'ERROR! Email ({form.email.data}) already exists.', 'error')
+        else:
+            flash(f'Error in form data!')
+
+    return render_template('users/register.html', form=form)
