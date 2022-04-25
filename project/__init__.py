@@ -1,3 +1,4 @@
+from curses.ascii import US
 from importlib.metadata import metadata
 import os
 import logging
@@ -9,6 +10,7 @@ from flask.logging import default_handler
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 #################
 # Configuration #
@@ -29,6 +31,9 @@ metadata = MetaData(naming_convention=convention)
 # attached to the Flask application at this point.
 database = SQLAlchemy(metadata=metadata)
 db_migration = Migrate()
+login = LoginManager()
+login.login_view = "users.login"
+
 ########################
 ### Helper Functions ###
 ########################
@@ -38,6 +43,14 @@ def initialise_extensions(app):
     # extension instance to bind it to the Flask application instance (app)
     database.init_app(app)
     db_migration.init_app(app, database, render_as_batch=True)
+
+    # Flask Login configuration
+    login.init_app(app)
+    from project.models import User
+
+    @login.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
 
 def register_blueprints(app):
