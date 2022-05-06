@@ -163,3 +163,67 @@ def test_invalid_logout_and_logged_in(test_client):
     assert b'Login' in response.data
     assert b'Please log in to access this page' in response.data
 
+def test_user_profile_logged_in(test_client, log_in_default_user):
+    """
+    GIVEN a Flask application configured for testing and the default user logged in
+    WHEN the '/users/profile' page is requested (GET)
+    THEN check that the profile for the current user is displayed
+    """
+    response = test_client.get('/users/profile', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Flask Stock Portfolio App' in response.data
+    assert b'User Profile' in response.data
+    assert b'Email: nipunsadvilkar@gmail.com' in response.data
+
+def test_user_profile_not_logged_in(test_client):
+    """
+    GIVEN a Flask application configured for testing
+    WHEN the '/users/profile' page is requested (GET) when the user is NOT logged in
+    THEN check that the user is redirected to the login page
+    """
+    response = test_client.get('/users/profile', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Flask Stock Portfolio App' in response.data
+    assert b'User Profile' not in response.data
+    assert b'Email: nipunsadvilkar@gmail.com' not in response.data
+    assert b'Please log in to access this page' in response.data
+
+def test_navigation_bar_logged_in(test_client, log_in_default_user):
+    """
+    """
+    response = test_client.get('/')
+    assert response.status_code == 200
+    assert b'Flask Stock Portfolio App' in response.data
+    assert b'Welcome to the' in response.data
+    assert b'List Stocks' in response.data
+    assert b'Add Stock' in response.data
+    assert b'Profile' in response.data
+    assert b'Logout' in response.data
+    assert b'Register' not in response.data
+    assert b'Login' not in response.data
+
+def test_navigation_bar_not_logged_in(test_client):
+    """
+    """
+    response = test_client.get('/')
+    assert response.status_code == 200
+    assert b'Flask Stock Portfolio App' in response.data
+    assert b'Welcome to the' in response.data
+    assert b'Login' in response.data
+    assert b'Register' in response.data
+    assert b'Add Stock' not in response.data
+    assert b'Profile' not in response.data
+    assert b'List Stocks' not in response.data
+    assert b'Logout' not in response.data
+
+def test_login_with_next_valid_path(test_client, register_default_user):
+    """
+    """
+    response = test_client.post('/users/login?next=%2users%2profile',
+                                data={'email': 'nipunsadvilkar@gmail.com',
+                                'password': 'LearningFromTestdriven.io'},
+                                follow_redirects=True)
+    assert response.status_code == 200
+    assert b'Flask Stock Portfolio App' in response.data
+    assert b'User Profile' in response.data
+    assert b'Email: nipunsadvilkar@gmail.com' in response.data
